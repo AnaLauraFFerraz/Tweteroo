@@ -56,12 +56,13 @@ app.post("/tweets", (req, res) => {
 });
 
 app.get("/tweets", (req, res) => {
-    
-    const lastTweets = tweets.reverse().slice(-10);
 
-    console.log(lastTweets)
+    let listSize = 0;
+    if (tweets.length >= 10) listSize = tweets.length - 10;
 
-    res.status(200).send("OK rolou");
+    const lastTweets = tweets.slice(listSize).reverse();
+
+    res.status(200).send(lastTweets);
 });
 
 app.listen(PORT);
