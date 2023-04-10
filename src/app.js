@@ -13,10 +13,12 @@ const tweets = [];
 const ERR_MISSING_FIELDS = "Todos os campos são obrigatórios!";
 const ERR_USER_EXISTS = "Usuário já existe!";
 
+const isString = (value) => typeof value === 'string';
+
 app.post("/sign-up", (req, res) => {
     const { username, avatar } = req.body;
 
-    if (!username || !avatar) {
+    if (!username || !avatar || !isString(username) || !isString(avatar)) {
         return res.status(400).send(ERR_MISSING_FIELDS);
     }
 
@@ -34,10 +36,10 @@ app.post("/sign-up", (req, res) => {
 app.post("/tweets", (req, res) => {
     const { username, tweet } = req.body;
 
-    if (!username || !tweet) {
+    if (!username || !tweet || !isString(username) || !isString(tweet)) {
         return res.status(400).send(ERR_MISSING_FIELDS);
     }
-    
+
     const user = users.find((user) => user.username === username);
 
     if (!user) {
@@ -51,16 +53,16 @@ app.post("/tweets", (req, res) => {
 
 app.get("/tweets", (req, res) => {
     const lastTweets = tweets
-      .slice(-10)
-      .reverse()
-      .map((tweet) => {
-        const user = users.find((user) => user.username === tweet.username);
-        return {
-          username: tweet.username,
-          avatar: user.avatar,
-          tweet: tweet.tweet,
-        };
-      });
+        .slice(-10)
+        .reverse()
+        .map((tweet) => {
+            const user = users.find((user) => user.username === tweet.username);
+            return {
+                username: tweet.username,
+                avatar: user.avatar,
+                tweet: tweet.tweet,
+            };
+        });
 
     res.status(200).send(lastTweets);
 });
