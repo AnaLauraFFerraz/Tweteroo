@@ -35,7 +35,8 @@ app.post("/sign-up", (req, res) => {
 });
 
 app.post("/tweets", (req, res) => {
-    const { username, tweet } = req.body;
+    const username = req.headers.user;
+    const { tweet } = req.body;
 
     if (!username || !tweet || !isString(username) || !isString(tweet)) {
         return res.status(400).send(ERR_MISSING_FIELDS);
