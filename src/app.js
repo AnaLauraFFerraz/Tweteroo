@@ -12,6 +12,7 @@ const tweets = [];
 
 const ERR_MISSING_FIELDS = "Todos os campos são obrigatórios!";
 const ERR_USER_EXISTS = "Usuário já existe!";
+const ERR_INVALID_PAGE = "Informe uma página válida!";
 
 const isString = (value) => typeof value === 'string';
 
@@ -52,8 +53,18 @@ app.post("/tweets", (req, res) => {
 });
 
 app.get("/tweets", (req, res) => {
-    const lastTweets = tweets
-        .slice(-10)
+    const page = req.query.page ? parseInt(req.query.page, 10) : 1;
+
+    if (isNaN(page) || page < 1) {
+        return res.status(400).send(ERR_INVALID_PAGE);
+    }
+
+    const itemsPerPage = 10;
+    const start = tweets.length - (page * itemsPerPage);
+    const end = start + itemsPerPage;
+
+    const paginatedTweets = tweets
+        .slice(Math.max(start, 0), Math.max(end, 0))
         .reverse()
         .map((tweet) => {
             const user = users.find((user) => user.username === tweet.username);
@@ -64,7 +75,7 @@ app.get("/tweets", (req, res) => {
             };
         });
 
-    res.status(200).send(lastTweets);
+    res.status(200).send(paginatedTweets);
 });
 
 app.get("/tweets/:username", (req, res) => {
